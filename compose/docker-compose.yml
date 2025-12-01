@@ -1,0 +1,78 @@
+services:
+  arduino-dashboard:
+    build:
+      context: ../arduino-backend
+      dockerfile: Dockerfile
+    container_name: arduino-dashboard
+    restart: unless-stopped
+    depends_on:
+      influxdb:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      emqx:
+        condition: service_started
+    ports:
+      - "${ARDUINO_DASHBOARD_PORT}:${ARDUINO_DASHBOARD_PORT}"
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:16
+    container_name: postgres-arduino
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-arduino:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUX_USER}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUX_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN}
+    volumes:
+      - influx-data-arduino:/var/lib/influxdb2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  emqx:
+    image: emqx:5.3
+    container_name: mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "18083:18083"
+    environment:
+      EMQX_DASHBOARD__DEFAULT_USERNAME: ${MQTT_DASHBOARD_USERNAME}
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: ${MQTT_DASHBOARD_PASSWORD}
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres-arduino:
+  influx-data-arduino:

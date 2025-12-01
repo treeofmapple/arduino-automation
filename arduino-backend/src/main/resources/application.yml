@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: console, ${PROFILE:test}
+  application:
+    name: arduino-dashboard
+
+server:
+  port: ${ARDUINO_DASHBOARD_PORT:8000} 

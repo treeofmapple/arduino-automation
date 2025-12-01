@@ -1,0 +1,47 @@
+{"properties": [
+  {
+    "name": "spring.h2.console.path",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.h2.console.path'"
+  },
+  {
+    "name": "spring.h2.console.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.h2.console.enabled'"
+  },
+  {
+    "name": "application.cors.allowed",
+    "type": "java.lang.String",
+    "description": "A description for 'application.cors.allowed'"
+  },
+  {
+    "name": "application.cors.time",
+    "type": "java.lang.String",
+    "description": "A description for 'application.cors.time'"
+  },
+  {
+    "name": "influx.url",
+    "type": "java.lang.String",
+    "description": "A description for 'influx.url'"
+  },
+  {
+    "name": "influx.token",
+    "type": "java.lang.String",
+    "description": "A description for 'influx.token'"
+  },
+  {
+    "name": "influx.org",
+    "type": "java.lang.String",
+    "description": "A description for 'influx.org'"
+  },
+  {
+    "name": "influx.bucket",
+    "type": "java.lang.String",
+    "description": "A description for 'influx.bucket'"
+  },
+  {
+    "name": "mqtt.url",
+    "type": "java.lang.String",
+    "description": "A description for 'mqtt.url'"
+  }
+]}

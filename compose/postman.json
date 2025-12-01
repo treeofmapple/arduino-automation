@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "b3467232-0268-4504-803a-09689260655d",
+		"name": "Arduino Automation API",
+		"description": "API Collection for ArduinoController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Historical Logs (Influx)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino/:query?device=my_device_name",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino",
+						":query"
+					],
+					"query": [
+						{
+							"key": "device",
+							"value": "my_device_name",
+							"description": "The device name to fetch logs for"
+						}
+					],
+					"variable": [
+						{
+							"key": "query",
+							"value": "0",
+							"description": "Page number (int)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Devices (Page)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino/:query",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino",
+						":query"
+					],
+					"variable": [
+						{
+							"key": "query",
+							"value": "0",
+							"description": "Page number (int)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Device by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino?id=1",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Device ID (long)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Device by Name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino?device=my_device_name",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino"
+					],
+					"query": [
+						{
+							"key": "device",
+							"value": "my_device_name",
+							"description": "Device Name (String)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New Device",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"deviceName\": \"sensor-01\",\n  \"description\": \"Living room sensor\",\n  \"ipAddress\": \"192.168.1.50\",\n  \"macAddress\": \"DE:AD:BE:EF:FE:ED\"\n}"
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Toggle Arduino",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino/toggle/:device",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino",
+						"toggle",
+						":device"
+					],
+					"variable": [
+						{
+							"key": "device",
+							"value": "my_device_name",
+							"description": "Device Name to toggle"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Arduino",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"description\": \"Updated description\",\n  \"status\": \"ACTIVE\"\n}"
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino/:device",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino",
+						":device"
+					],
+					"variable": [
+						{
+							"key": "device",
+							"value": "my_device_name",
+							"description": "Device Name to update"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Token",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino/token/:device",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino",
+						"token",
+						":device"
+					],
+					"variable": [
+						{
+							"key": "device",
+							"value": "my_device_name",
+							"description": "Device Name to refresh token"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Device By ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/v1/arduino/:query",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"v1",
+						"arduino",
+						":query"
+					],
+					"variable": [
+						{
+							"key": "query",
+							"value": "1",
+							"description": "ID to delete (long)"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8001",
+			"type": "string"
+		}
+	]
+}
