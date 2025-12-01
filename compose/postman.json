@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "b3467232-0268-4504-803a-09689260655d",
+		"_postman_id": "145379ef-15db-43f8-9996-3d7c1dfaeff7",
 		"name": "Arduino Automation API",
 		"description": "API Collection for ArduinoController",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38340143"
 	},
 	"item": [
 		{
@@ -12,27 +13,26 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URL}}/v1/arduino/:query?device=my_device_name",
+					"raw": "{{BASE_URL}}/v1/arduino/logs/:query?device=sensor-01",
 					"host": [
 						"{{BASE_URL}}"
 					],
 					"path": [
 						"v1",
 						"arduino",
+						"logs",
 						":query"
 					],
 					"query": [
 						{
 							"key": "device",
-							"value": "my_device_name",
-							"description": "The device name to fetch logs for"
+							"value": "sensor-01"
 						}
 					],
 					"variable": [
 						{
 							"key": "query",
-							"value": "0",
-							"description": "Page number (int)"
+							"value": "0"
 						}
 					]
 				}
@@ -96,7 +96,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URL}}/v1/arduino?device=my_device_name",
+					"raw": "{{BASE_URL}}/v1/arduino?device=sensor-01",
 					"host": [
 						"{{BASE_URL}}"
 					],
@@ -107,7 +107,7 @@
 					"query": [
 						{
 							"key": "device",
-							"value": "my_device_name",
+							"value": "sensor-01",
 							"description": "Device Name (String)"
 						}
 					]
@@ -128,7 +128,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"deviceName\": \"sensor-01\",\n  \"description\": \"Living room sensor\",\n  \"ipAddress\": \"192.168.1.50\",\n  \"macAddress\": \"DE:AD:BE:EF:FE:ED\"\n}"
+					"raw": "{\n  \"deviceName\": \"sensor-01\",\n  \"macAddress\": \"DE:AD:BE:EF:FE:ED\",\n  \"description\": \"Living room sensor\"\n}\n"
 				},
 				"url": {
 					"raw": "{{BASE_URL}}/v1/arduino",
@@ -162,7 +162,7 @@
 					"variable": [
 						{
 							"key": "device",
-							"value": "my_device_name",
+							"value": "sensor-01",
 							"description": "Device Name to toggle"
 						}
 					]
@@ -198,7 +198,7 @@
 					"variable": [
 						{
 							"key": "device",
-							"value": "my_device_name",
+							"value": "sensor-01",
 							"description": "Device Name to update"
 						}
 					]
@@ -225,7 +225,7 @@
 					"variable": [
 						{
 							"key": "device",
-							"value": "my_device_name",
+							"value": "sensor-01",
 							"description": "Device Name to refresh token"
 						}
 					]
