@@ -4,7 +4,13 @@
 const char* DEVICE_NAME = "sensor-01";
 const char* API_KEY     = "393eef0da91c0cf3e66cf218f91f5e7a";
 const char* SECRET      = "905087b4af7636aa3833cbf74f7f2c4b567495154fc603e5b7148358b28d94ab";
-const char* MQTT_BROKER = "mqtt-broker";
+const char* MQTT_BROKER = "mqtt-broker"; 
+
+// put the broker access to be able to be
+// accessed via external port 
+
+const char* WIFI_SSID     = "YOUR_WIFI_NAME";
+const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 
 String getTopic() {
   return String("arduino/") + DEVICE_NAME + "/" + API_KEY + "/" + SECRET;
@@ -29,19 +35,31 @@ String getTopic() {
   }
 
 #else
-  #include <SPI.h>
-  #include <Ethernet.h>
+  #include <Wifi.h>
+  #include <ESP8266WiFi.h>
   #include <PubSubClient.h>
 
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; 
-// Make it get the mac address via web connection.
-// connect it via wifi the get ip and mac
-  IPAddress ip(192, 168, 1, 177);
-  EthernetClient ethClient;
-  PubSubClient client(ethClient);
+  WifiClient wifiClient;
+  PubSubClient client(wifiClient)!
+  byte mac[6];
 
   void setupHardware() {
-    Ethernet.begin(mac, ip);
+    Serial.println("Connecting to Wifi...");
+    Wifi.begin(WIFI_SSID, WIFI_PASSWORD);
+    while (Wifi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+    Serial.println("\nWifi connected!");
+    Serial.print("Ip Address: ");
+    Serial.println(Wifi.localIP());
+    Wifi.macAddress(mac);
+    Serial.print("MAC Address: ");
+    for (int i = 0; i < 6; i++) {
+        Serial.printf("%02X", mac[i]);
+        if (i < 5) Serial.print(":");
+}
+Serial.println();
     client.setServer(MQTT_BROKER, 1883);
   }
 
@@ -69,7 +87,12 @@ void loop() {
 
     StaticJsonDocument<256> doc;
 
-    doc["mac"]	       = mac;
+char macStr[18];
+sprintf(macStr, "%02X:%02X:%02X:%02X:%02X:%02X",
+        mac[0], mac[1], mac[2],
+        mac[3], mac[4], mac[5]);
+
+    doc["mac"]         = macStr;
     doc["firmware"]    = "1.0.0";
     doc["temperature"] = temp;
     doc["humidity"]    = hum;
