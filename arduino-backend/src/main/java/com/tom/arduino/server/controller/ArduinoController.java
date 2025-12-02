@@ -1,6 +1,7 @@
 package com.tom.arduino.server.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,7 +59,7 @@ public class ArduinoController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@PostMapping
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ArduinoResponseToken> addNewDevice(@RequestBody(required = true) ArduinoRequest request) {
 		var response = service.createArduino(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -80,7 +81,7 @@ public class ArduinoController {
 	}
 
 	@PutMapping(value = "/token/{device}")
-	public ResponseEntity<ArduinoResponseToken> updateArduino(
+	public ResponseEntity<ArduinoResponseToken> updateTokens(
 			@PathVariable(value = "device", required = true) String deviceName) {
 		var response = service.updateTokens(deviceName);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
