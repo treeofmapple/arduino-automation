@@ -28,16 +28,10 @@ public class Arduino extends Auditable {
 
 	@Column(name = "description", length = 2048)
 	private String description;
-	
-	@Column(name = "mac_address")
-	private String macAddress;
-
-	@Column(name = "firmware")
-	private String firmware;
 
 	@Column(name = "active", nullable = false)
 	private Boolean active = true;
-	
+
 	@Column(name = "api_key", length = 128)
 	private String apiKey;
 

@@ -11,12 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ArduinoInflux {
 
+	private String macAddress;
+	private String firmware;
 	private Double temperature;
 	private Double humidity;
 	private Double voltage;
-	
 	private String update;
 	private String events;
 	private String logs;
-	
+
 }

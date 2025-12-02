@@ -13,9 +13,10 @@ public interface ArduinoSocketMapper {
         if (record == null) {
             return null;
         }
-        
+
         return new ArduinoDataMessage(
             getString(record, "firmware"),
+	    getString(record, "mac"),
             getDouble(record, "temperature"),
             getDouble(record, "humidity"),
             getDouble(record, "voltage"),
@@ -24,7 +25,7 @@ public interface ArduinoSocketMapper {
             getString(record, "logs")
         );
     }
-    
+
     default String getString(FluxRecord record, String field) {
         Object val = record.getValueByKey(field);
         return val != null ? String.valueOf(val) : null;
@@ -44,5 +45,4 @@ public interface ArduinoSocketMapper {
             return null;
         }
     }
-	
 }

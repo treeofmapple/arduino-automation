@@ -2,6 +2,7 @@ package com.tom.arduino.server.processes;
 
 public record ArduinoDataMessage(
 		
+		String macAddress,
 		String firmware,
 		Double temperature,
 		Double humidity,

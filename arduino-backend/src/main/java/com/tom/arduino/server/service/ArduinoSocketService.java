@@ -28,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class ArduinoSocketService {
 
-	private final SimpMessagingTemplate template;
+    private final SimpMessagingTemplate template;
     private final ArduinoUtils arduinoUtils;
     private final ArduinoSocketMapper mapper;
     private final InfluxDBClient influx;
@@ -50,7 +50,7 @@ public class ArduinoSocketService {
         try {
             Point point = Point.measurement("arduino_data")
                     .addTag("deviceName", arduino.getDeviceName())
-                    .addTag("mac", arduino.getMacAddress())
+                    .addTag("mac", data.macAddress() != null ? data.macAddress() : "unknown")
                     .addField("firmware", data.firmware() != null ? data.firmware() : "unknown")
                     .addField("temperature", data.temperature())
                     .addField("humidity", data.humidity())

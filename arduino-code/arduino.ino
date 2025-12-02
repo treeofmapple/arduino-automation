@@ -33,7 +33,9 @@ String getTopic() {
   #include <Ethernet.h>
   #include <PubSubClient.h>
 
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; 
+// Make it get the mac address via web connection.
+// connect it via wifi the get ip and mac
   IPAddress ip(192, 168, 1, 177);
   EthernetClient ethClient;
   PubSubClient client(ethClient);
@@ -67,6 +69,7 @@ void loop() {
 
     StaticJsonDocument<256> doc;
 
+    doc["mac"]	       = mac;
     doc["firmware"]    = "1.0.0";
     doc["temperature"] = temp;
     doc["humidity"]    = hum;
@@ -80,5 +83,5 @@ void loop() {
 
     sendMqtt(getTopic(), jsonString);
 
-    delay(5000);
+    delay(2000);
 }
