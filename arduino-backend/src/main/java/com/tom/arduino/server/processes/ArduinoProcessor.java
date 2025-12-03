@@ -5,10 +5,9 @@ import java.time.Instant;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.domain.WritePrecision;
-import com.influxdb.client.write.Point;
 import com.tom.arduino.server.dto.ArduinoAuthentication;
+import com.tom.arduino.server.mapper.ArduinoSocketMapper;
+import com.tom.arduino.server.repository.timescale.ArduinoLogsRepository;
 import com.tom.arduino.server.service.ArduinoUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -20,32 +19,21 @@ import lombok.extern.log4j.Log4j2;
 public class ArduinoProcessor {
 
 	private final SimpMessagingTemplate template;
-    private final ArduinoUtils arduinoUtils;
-    private final InfluxDBClient influx;
-	
-    public void process(ArduinoAuthentication auth, ArduinoDataMessage data) {
-    	var arduino = arduinoUtils.authenticateArduino(auth);
+	private final ArduinoLogsRepository repository;
+	private final ArduinoSocketMapper mapper;
+	private final ArduinoUtils arduinoUtils;
 
-        log.info("Arduino {} validated", arduino.getDeviceName());
+	public void process(ArduinoAuthentication auth, ArduinoDataMessage data) {
+		var arduino = arduinoUtils.authenticateArduino(auth);
 
-        try {
-            Point point = Point.measurement("arduino_data")
-                    .addTag("deviceName", arduino.getDeviceName())
-                    .addTag("mac", data.macAddress() != null ? data.macAddress() : "unknown")
-                    .addField("firmware", data.firmware() != null ? data.firmware() : "unknown")
-                    .addField("temperature", data.temperature())
-                    .addField("humidity", data.humidity())
-                    .addField("voltage", data.voltage())
-                    .addField("logs", data.logs() != null ? data.logs() : "") 
-                    .addField("events", data.events() != null ? data.events() : "")
-                    .time(Instant.now(), WritePrecision.MS);
+		log.info("Arduino {} validated", arduino.getDeviceName());
 
-            influx.getWriteApiBlocking().writePoint(point);
-        } catch (Exception e) {
-            log.error("Failed to write to InfluxDB", e);
-        }
-        
-        template.convertAndSend("/topic/data", data); // websocket
-    }
-	
+		var arduinoLogs = mapper.build(arduino, Instant.now(), arduino.getDeviceName(), data.temperature(),
+				data.humidity(), data.voltage(), data.macAddress(), data.firmware(), data.logs(), data.events());
+
+		repository.save(arduinoLogs);
+
+		template.convertAndSend("/topic/data/" + arduino.getDeviceName(), data); // websocket
+	}
+
 }

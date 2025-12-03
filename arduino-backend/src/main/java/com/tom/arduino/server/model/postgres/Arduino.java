@@ -1,4 +1,6 @@
-package com.tom.arduino.server.model;
+package com.tom.arduino.server.model.postgres;
+
+import com.tom.arduino.server.model.Auditable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

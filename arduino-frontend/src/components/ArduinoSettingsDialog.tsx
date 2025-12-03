@@ -8,6 +8,7 @@ import { EditArduinoDialog } from "./EditArduinoDialog";
 import { RegenerateTokenDialog } from "./RegenerateTokenDialog";
 import { DeleteArduinoDialog } from "./DeleteArduinoDialog";
 import { toast } from "sonner@2.0.3";
+import { toggleArduino } from "../api/mainEndpoints";
 
 interface ArduinoSettingsDialogProps {
   open: boolean;
@@ -33,22 +34,14 @@ export function ArduinoSettingsDialog({
     setIsToggling(true);
 
     try {
-      // Replace with your actual API endpoint
-      // const response = await fetch(`/api/arduinos/toggle/${encodeURIComponent(arduino.deviceName)}`, {
-      //   method: 'POST'
-      // });
-      // const data: Arduino = await response.json();
-
-      // Mock toggle
-      const updatedArduino = { ...arduino, active: !arduino.active };
+      const updatedArduino = await toggleArduino(arduino.deviceName);
       onArduinoUpdated(updatedArduino);
-
       toast.success(
-        `${arduino.deviceName} has been ${updatedArduino.active ? "activated" : "deactivated"}`
+        `${updatedArduino.deviceName} has been ${updatedArduino.active ? "activated" : "deactivated"}`
       );
     } catch (error) {
       console.error("Error toggling Arduino:", error);
-      toast.error("Failed to toggle Arduino");
+      toast.error("Failed to toggle Arduino status");
     } finally {
       setIsToggling(false);
     }
@@ -107,7 +100,7 @@ export function ArduinoSettingsDialog({
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm text-slate-400">
-                  Update device name, MAC address, and description
+                  Update device name, and description
                 </p>
                 <Button
                   onClick={() => setEditDialogOpen(true)}

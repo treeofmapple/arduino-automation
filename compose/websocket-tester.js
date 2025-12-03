@@ -12,7 +12,7 @@ const client = new Client({
 client.onConnect = () => {
   console.log('Connected to WebSocket!');
 
-  client.subscribe('/topic/data', (message) => {
+  client.subscribe('/topic/data/sensor-005', (message) => {
     const json = JSON.parse(message.body);
     console.log('Arduino Data:', json);
   });

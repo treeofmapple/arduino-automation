@@ -18,6 +18,12 @@ public class MqttConfig {
 
 	@Value("${mqtt.url:tcp://localhost:1883}")
 	private String brokerUrl;
+	
+	@Value("${mqtt.username")
+	private String brokerUsername;
+	
+	@Value("${mqtt.password")
+	private String brokerPassword;
 
 	@Bean
 	IMqttClient mqttClient(MqttListener listener) throws MqttException {
@@ -29,6 +35,9 @@ public class MqttConfig {
 		options.setCleanSession(true);
 		options.setConnectionTimeout(10);
 
+	    options.setUserName(brokerUsername);
+	    options.setPassword(brokerPassword.toCharArray());
+		
 		if (!client.isConnected()) {
 			client.connect(options);
 		}

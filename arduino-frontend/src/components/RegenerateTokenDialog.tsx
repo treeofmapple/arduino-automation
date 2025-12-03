@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
 import { Loader2, Copy, AlertTriangle } from "lucide-react";
 import { Arduino } from "../App";
 import { toast } from "sonner@2.0.3";
+import { updateTokens } from "../api/mainEndpoints";
 
 interface ArduinoResponseToken extends Arduino {
   apiKey: string;
@@ -18,7 +26,11 @@ interface RegenerateTokenDialogProps {
   deviceName: string;
 }
 
-export function RegenerateTokenDialog({ open, onOpenChange, deviceName }: RegenerateTokenDialogProps) {
+export function RegenerateTokenDialog({
+  open,
+  onOpenChange,
+  deviceName,
+}: RegenerateTokenDialogProps) {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [newTokens, setNewTokens] = useState<ArduinoResponseToken | null>(null);
 
@@ -26,26 +38,8 @@ export function RegenerateTokenDialog({ open, onOpenChange, deviceName }: Regene
     setIsRegenerating(true);
 
     try {
-      // Replace with your actual API endpoint
-      // const response = await fetch(`/api/arduinos/token/${encodeURIComponent(deviceName)}`, {
-      //   method: 'PUT'
-      // });
-      // const data: ArduinoResponseToken = await response.json();
-
-      // Mock API response
-      const mockResponse: ArduinoResponseToken = {
-        id: Date.now(),
-        deviceName: deviceName,
-        macAddress: "00:1B:44:11:3A:B7",
-        firmware: "v2.3.1",
-        active: true,
-        apiKey: `ak_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
-        secret: `sk_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
-        createdDate: new Date().toISOString(),
-        lastModifiedDate: new Date().toISOString()
-      };
-
-      setNewTokens(mockResponse);
+      const data = await updateTokens(deviceName);
+      setNewTokens(data);
       toast.success("Tokens regenerated successfully!");
     } catch (error) {
       console.error("Error regenerating tokens:", error);
@@ -76,14 +70,16 @@ export function RegenerateTokenDialog({ open, onOpenChange, deviceName }: Regene
                 Regenerate API Tokens
               </DialogTitle>
               <DialogDescription className="text-slate-400">
-                This will invalidate the current API key and secret for <strong>{deviceName}</strong>. 
-                Any devices using the old credentials will stop working.
+                This will invalidate the current API key and secret for{" "}
+                <strong>{deviceName}</strong>. Any devices using the old
+                credentials will stop working.
               </DialogDescription>
             </DialogHeader>
 
             <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-lg">
               <p className="text-amber-400 text-sm">
-                <strong>Warning:</strong> Make sure you update your Arduino device with the new credentials immediately after regenerating.
+                <strong>Warning:</strong> Make sure you update your Arduino
+                device with the new credentials immediately after regenerating.
               </p>
             </div>
 
@@ -118,7 +114,8 @@ export function RegenerateTokenDialog({ open, onOpenChange, deviceName }: Regene
             <DialogHeader>
               <DialogTitle>New Tokens Generated</DialogTitle>
               <DialogDescription className="text-slate-400">
-                Save these credentials securely. You won't be able to see the secret again.
+                Save these credentials securely. You won't be able to see the
+                secret again.
               </DialogDescription>
             </DialogHeader>
 
@@ -130,13 +127,17 @@ export function RegenerateTokenDialog({ open, onOpenChange, deviceName }: Regene
                     size="sm"
                     variant="ghost"
                     className="h-6 text-amber-400 hover:text-amber-300"
-                    onClick={() => copyToClipboard(newTokens.apiKey!, "API Key")}
+                    onClick={() =>
+                      copyToClipboard(newTokens.apiKey!, "API Key")
+                    }
                   >
                     <Copy className="size-3 mr-1" />
                     Copy
                   </Button>
                 </div>
-                <p className="text-white font-mono text-sm break-all">{newTokens.apiKey}</p>
+                <p className="text-white font-mono text-sm break-all">
+                  {newTokens.apiKey}
+                </p>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
@@ -151,7 +152,9 @@ export function RegenerateTokenDialog({ open, onOpenChange, deviceName }: Regene
                     Copy
                   </Button>
                 </div>
-                <p className="text-white font-mono text-sm break-all">{newTokens.secret}</p>
+                <p className="text-white font-mono text-sm break-all">
+                  {newTokens.secret}
+                </p>
               </div>
             </div>
 

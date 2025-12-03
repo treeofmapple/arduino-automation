@@ -43,5 +43,60 @@
     "name": "mqtt.url",
     "type": "java.lang.String",
     "description": "A description for 'mqtt.url'"
+  },
+  {
+    "name": "mqtt.username",
+    "type": "java.lang.String",
+    "description": "A description for 'mqtt.username'"
+  },
+  {
+    "name": "mqtt.password",
+    "type": "java.lang.String",
+    "description": "A description for 'mqtt.password'"
+  },
+  {
+    "name": "postgres.datasource.url",
+    "type": "java.lang.String",
+    "description": "A description for 'postgres.datasource.url'"
+  },
+  {
+    "name": "postgres.datasource.username",
+    "type": "java.lang.String",
+    "description": "A description for 'postgres.datasource.username'"
+  },
+  {
+    "name": "postgres.datasource.password",
+    "type": "java.lang.String",
+    "description": "A description for 'postgres.datasource.password'"
+  },
+  {
+    "name": "postgres.datasource.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'postgres.datasource.driver-class-name'"
+  },
+  {
+    "name": "timescale.datasource.url",
+    "type": "java.lang.String",
+    "description": "A description for 'timescale.datasource.url'"
+  },
+  {
+    "name": "timescale.datasource.username",
+    "type": "java.lang.String",
+    "description": "A description for 'timescale.datasource.username'"
+  },
+  {
+    "name": "timescale.datasource.password",
+    "type": "java.lang.String",
+    "description": "A description for 'timescale.datasource.password'"
+  },
+  {
+    "name": "timescale.datasource.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'timescale.datasource.driver-class-name'"
+  },
+  {
+    "name": "application.page.size",
+    "type": "java.lang.String",
+    "description": "A description for 'application.page.size'"
   }
 ]}

@@ -1,15 +1,16 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-const char* DEVICE_NAME = "NONE";
-const char* API_KEY = "NONE";
-const char* SECRET = "NONE";
-const char* MQTT_BROKER = "NONE";
+const char *DEVICE_NAME = "NONE";
+const char *API_KEY = "NONE";
+const char *SECRET = "NONE";
+const char *MQTT_BROKER = "NONE";
 
-const char* WIFI_SSID = "NONE";
-const char* WIFI_PASSWORD = "NONE";
+const char *WIFI_SSID = "NONE";
+const char *WIFI_PASSWORD = "NONE";
 
 byte mac[6];
+int MQTT_PORT = 9002;
 
 String getTopic() {
   return String("arduino/") + DEVICE_NAME + "/" + API_KEY + "/" + SECRET;
@@ -20,7 +21,10 @@ String getTopic() {
 
 void sendMqtt(String topic, String payload) {
   payload.replace("\"", "\\\"");
-  String command = "mosquitto_pub -h " + String(MQTT_BROKER) + " -t " + topic + " -m \"" + payload + "\"";
+
+  String command =
+    "mosquitto_pub -h " + String(MQTT_BROKER) + " -p " + String(MQTT_PORT) + " -t " + topic + " -m \"" + payload + "\"";
+
   Serial.print("[SIMULATION] Executing: ");
   Serial.println(command);
 
@@ -61,7 +65,8 @@ void setupHardware() {
     if (i < 5) Serial.print(":");
   }
   Serial.println();
-  client.setServer(MQTT_BROKER, 1883);
+  client.setServer(MQTT_BROKER, MQTT_PORT);
+  client.setBufferSize(1024);
 }
 
 void sendMqtt(String topic, String payload) {
@@ -71,10 +76,16 @@ void sendMqtt(String topic, String payload) {
     } else {
       Serial.print("MQTT Failed, rc=");
       Serial.println(client.state());
+      return;
     }
   }
+
   if (client.connected()) {
-    client.publish(topic.c_str(), payload.c_str());
+    if (client.publish(topic.c_str(), payload.c_str())) {
+      Serial.println("[SUCCESS] Data Sent!");
+    } else {
+      Serial.println("[ERROR] Failed to send. Packet too big?");
+    }
   }
 }
 #endif
@@ -109,7 +120,7 @@ void loop() {
           mac[0], mac[1], mac[2],
           mac[3], mac[4], mac[5]);
 
-  doc["mac"] = macStr;
+  doc["macAddress"] = macStr;
   doc["firmware"] = "1.0.0";
   doc["temperature"] = temp;
   doc["humidity"] = hum;
@@ -127,5 +138,5 @@ void loop() {
   client.loop();
 #endif
 
-  delay(2000);
+  delay(1000);
 }

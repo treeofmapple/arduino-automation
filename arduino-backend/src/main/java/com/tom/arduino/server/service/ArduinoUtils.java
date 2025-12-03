@@ -1,7 +1,5 @@
 package com.tom.arduino.server.service;
 
-import java.time.Duration;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tom.arduino.server.dto.ArduinoAuthentication;
 import com.tom.arduino.server.exception.NotFoundException;
 import com.tom.arduino.server.exception.UnauthorizedException;
-import com.tom.arduino.server.model.Arduino;
-import com.tom.arduino.server.repository.ArduinoRepository;
+import com.tom.arduino.server.model.postgres.Arduino;
+import com.tom.arduino.server.repository.postgres.ArduinoRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -42,8 +40,4 @@ public class ArduinoUtils {
 	}
 
 	
-    public String toFluxRange(Duration duration) {
-        long hours = duration.toHours();
-        return "-" + hours + "h";
-    }
 }

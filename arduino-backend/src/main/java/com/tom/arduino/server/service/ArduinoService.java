@@ -17,8 +17,8 @@ import com.tom.arduino.server.exception.AlreadyExistsException;
 import com.tom.arduino.server.exception.NotFoundException;
 import com.tom.arduino.server.logic.KeyGenerator;
 import com.tom.arduino.server.mapper.ArduinoMapper;
-import com.tom.arduino.server.model.Arduino;
-import com.tom.arduino.server.repository.ArduinoRepository;
+import com.tom.arduino.server.model.postgres.Arduino;
+import com.tom.arduino.server.repository.postgres.ArduinoRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

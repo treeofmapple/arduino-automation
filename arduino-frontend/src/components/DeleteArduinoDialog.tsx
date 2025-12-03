@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner@2.0.3";
+import { deleteArduinoById } from "../api/mainEndpoints";
 
 interface DeleteArduinoDialogProps {
   open: boolean;
@@ -12,12 +20,12 @@ interface DeleteArduinoDialogProps {
   onArduinoDeleted: () => void;
 }
 
-export function DeleteArduinoDialog({ 
-  open, 
-  onOpenChange, 
-  arduinoId, 
-  deviceName, 
-  onArduinoDeleted 
+export function DeleteArduinoDialog({
+  open,
+  onOpenChange,
+  arduinoId,
+  deviceName,
+  onArduinoDeleted,
 }: DeleteArduinoDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -25,13 +33,7 @@ export function DeleteArduinoDialog({
     setIsDeleting(true);
 
     try {
-      // Replace with your actual API endpoint
-      // await fetch(`/api/arduinos/${arduinoId}`, {
-      //   method: 'DELETE'
-      // });
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await deleteArduinoById(arduinoId);
 
       toast.success(`${deviceName} has been deleted`);
       onArduinoDeleted();
@@ -53,14 +55,15 @@ export function DeleteArduinoDialog({
             Delete Arduino Device
           </DialogTitle>
           <DialogDescription className="text-slate-400">
-            Are you sure you want to delete <strong>{deviceName}</strong>? 
-            This action cannot be undone.
+            Are you sure you want to delete <strong>{deviceName}</strong>? This
+            action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
         <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-lg">
           <p className="text-red-400 text-sm">
-            <strong>Warning:</strong> All historical data and configurations for this device will be permanently deleted.
+            <strong>Warning:</strong> All historical data and configurations for
+            this device will be permanently deleted.
           </p>
         </div>
 

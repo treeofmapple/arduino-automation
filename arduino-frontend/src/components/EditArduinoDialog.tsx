@@ -7,6 +7,7 @@ import { Textarea } from "./ui/textarea";
 import { Loader2 } from "lucide-react";
 import { Arduino } from "../App";
 import { toast } from "sonner@2.0.3";
+import { updateArduino } from "../api/mainEndpoints";
 
 interface ArduinoUpdate {
   deviceName: string;
@@ -23,7 +24,6 @@ interface EditArduinoDialogProps {
 
 export function EditArduinoDialog({ open, onOpenChange, arduino, onArduinoUpdated }: EditArduinoDialogProps) {
   const [deviceName, setDeviceName] = useState("");
-  const [macAddress, setMacAddress] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -31,8 +31,7 @@ export function EditArduinoDialog({ open, onOpenChange, arduino, onArduinoUpdate
   useEffect(() => {
     if (open && arduino) {
       setDeviceName(arduino.deviceName);
-      setMacAddress(arduino.macAddress);
-      setDescription("");
+      setDescription(arduino.description || "");
     }
   }, [open, arduino]);
 
@@ -41,12 +40,6 @@ export function EditArduinoDialog({ open, onOpenChange, arduino, onArduinoUpdate
 
     if (!deviceName.trim()) {
       newErrors.deviceName = "Please set a name for the device";
-    }
-
-    if (!macAddress.trim()) {
-      newErrors.macAddress = "Please set the mac address for connection";
-    } else if (!/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(macAddress)) {
-      newErrors.macAddress = "Please enter a valid MAC address (e.g., 00:1B:44:11:3A:B7)";
     }
 
     if (description.length > 2048) {
@@ -67,20 +60,16 @@ export function EditArduinoDialog({ open, onOpenChange, arduino, onArduinoUpdate
     setIsSubmitting(true);
 
     try {
-      // Replace with your actual API endpoint
-      // const response = await fetch(`/api/arduinos/${arduino.deviceName}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ deviceName, macAddress, description })
-      // });
-      // const data: Arduino = await response.json();
+      const apiResponse = await updateArduino(arduino.deviceName, {
+        deviceName,
+        description,
+      });
 
-      // Mock API response
       const updatedArduino: Arduino = {
         ...arduino,
-        deviceName,
-        macAddress,
-        lastModifiedDate: new Date().toISOString()
+        ...(apiResponse as unknown as Partial<Arduino>),
+        deviceName: deviceName,
+        description: description,
       };
 
       onArduinoUpdated(updatedArduino);
@@ -93,6 +82,7 @@ export function EditArduinoDialog({ open, onOpenChange, arduino, onArduinoUpdate
       setIsSubmitting(false);
     }
   };
+
 
   const handleClose = () => {
     setErrors({});
@@ -125,22 +115,8 @@ export function EditArduinoDialog({ open, onOpenChange, arduino, onArduinoUpdate
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="macAddress">MAC Address *</Label>
-            <Input
-              id="macAddress"
-              value={macAddress}
-              onChange={(e) => setMacAddress(e.target.value)}
-              placeholder="00:1B:44:11:3A:B7"
-              className="bg-slate-900 border-slate-700 text-white font-mono"
-            />
-            {errors.macAddress && (
-              <p className="text-red-400 text-sm">{errors.macAddress}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="description">
-              Description 
+              Description
               <span className="text-slate-500 text-sm ml-2">
                 ({description.length}/2048)
               </span>

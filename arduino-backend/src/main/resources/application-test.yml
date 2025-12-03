@@ -19,12 +19,7 @@ application:
     allowed: "*"
     time: 3600
  
-influx:
-  url: ${INFLUX_URL}
-  token: ${INFLUX_TOKEN}
-  org: ${INFLUX_ORG}
-  bucket: ${INFLUX_BUCKET}
-    
 mqtt:
   url: ${MQTT_URL}
-    
+  username: ${MQTT_USERNAME}
+  password: ${MQTT_PASSWORD}

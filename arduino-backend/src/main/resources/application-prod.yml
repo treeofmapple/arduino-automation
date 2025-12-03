@@ -2,30 +2,35 @@ spring:
   sql:
     init:
       continue-on-error: true
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:example}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      initialization-fail-timeout: 0
+
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: update
-    show-sql: false 
+    show-sql: false
+
+#postgres:
+#  datasource:
+#    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:example}
+#    username: ${DB_USER}
+#    password: ${DB_PASSWORD}
+#    driver-class-name: org.postgresql.Driver
+
+#timescale:
+  datasource:
+    url: jdbc:postgresql://${TS_HOST:localhost}:${TS_PORT:5433}/${TS_DB:timescale}
+    username: ${TS_USER}
+    password: ${TS_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
 application:
+  page:
+    size: 10
   cors:
     allowed: "*"
     time: 3600
- 
-influx:
-  url: ${INFLUX_URL}
-  token: ${INFLUX_TOKEN}
-  org: ${INFLUX_ORG}
-  bucket: ${INFLUX_BUCKET}
-    
+
 mqtt:
+  username: ${MQTT_USERNAME}
+  password: ${MQTT_PASSWORD}
   url: ${MQTT_URL}
-    

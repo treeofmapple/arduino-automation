@@ -1,7 +1,0 @@
-services:
-  arduino-sim:
-    build:
-      context: ../arduino-code
-      dockerfile: Dockerfile
-    container_name: arduino-sim
-    restart: "no"

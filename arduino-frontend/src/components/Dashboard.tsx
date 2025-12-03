@@ -22,9 +22,9 @@ import {
   connectArduinoSocket,
   disconnectArduinoSocket,
 } from "../api/websocket";
-import { ArduinoDataMessage } from "../api/endpointsDto";
 import { MetricCard } from "./helper/MetricCard";
 import { Chart } from "./helper/Chart";
+import { ArduinoDataMessage } from "../api/endpointsDto";
 
 interface HistoricalData {
   timestamp: string;

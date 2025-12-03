@@ -1,7 +1,11 @@
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
-const SOCKET_URL = "http://localhost:8000/v1/arduino";
+if (typeof global === "undefined") {
+  (window as any).global = window;
+}
+
+const SOCKET_URL = "http://localhost:8000/arduino";
 
 let stompClient: Client | null = null;
 
@@ -11,19 +15,20 @@ export const connectArduinoSocket = (
   onConnected?: () => void,
   onError?: (error: any) => void,
 ) => {
-  if (stompClient && stompClient.active) {
-    stompClient.deactivate();
-  }
 
   const socket = new SockJS(SOCKET_URL);
 
-  stompClient = new Client({
+  const client = new Client({
     webSocketFactory: () => socket,
-    debug: () => {},
     reconnectDelay: 5000,
+    debug: (str) => {
+      if (str.includes("Connected") || str.includes("Error")) {
+          console.log(`[STOMP] ${str}`);
+      }
+    },
 
     onConnect: () => {
-      stompClient?.subscribe(`/topic/${deviceName}`, (message) => {
+      client.subscribe(`/topic/data/${deviceName}`, (message) => {
         try {
           const body = JSON.parse(message.body);
           onMessage(body);
@@ -41,23 +46,21 @@ export const connectArduinoSocket = (
     },
 
     onWebSocketClose: (event) => {
-      if (event.code !== 1000) {
+       if (event.code !== 1000 && event.code !== 1005) {
           console.warn("WebSocket closed unexpectedly:", event);
-          onError?.(event);
-      }
-    },
-
-    onWebSocketError: (event) => {
-      console.error("WebSocket error:", event);
-      onError?.(event);
+       }
     },
   });
 
-  stompClient.activate();
+  stompClient = client;
+  client.activate();
 
   return () => {
-    stompClient?.deactivate();
-    stompClient = null;
+    if (stompClient === client) {
+        console.log("Deactivating STOMP client...");
+        client.deactivate();
+        stompClient = null;
+    }
   };
 };
 

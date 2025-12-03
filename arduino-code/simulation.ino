@@ -7,6 +7,7 @@ const char *SECRET;
 const char *MQTT_BROKER;
 
 byte mac[6];
+int MQTT_PORT = 1883;
 
 String getTopic() {
   return String("arduino/") + DEVICE_NAME + "/" + API_KEY + "/" + SECRET;
@@ -18,8 +19,9 @@ String getTopic() {
 
 void sendMqtt(String topic, String payload) {
   payload.replace("\"", "\\\"");
-  String command = "mosquitto_pub -h " + String(MQTT_BROKER) + " -t " + topic +
-                   " -m \"" + payload + "\"";
+  String command = "mosquitto_pub -h " + String(MQTT_BROKER) + " -p " +
+                   String(MQTT_PORT) + " -t " + topic + " -m \"" + payload +
+                   "\"";
 
   Serial.print("[SIMULATION] Executing: ");
   Serial.println(command);
@@ -66,7 +68,7 @@ void setupHardware() {
       Serial.print(":");
   }
   Serial.println();
-  client.setServer(MQTT_BROKER, 1883);
+  client.setServer(MQTT_BROKER, MQTT_PORT);
 }
 
 void sendMqtt(String topic, String payload) {
@@ -76,6 +78,7 @@ void sendMqtt(String topic, String payload) {
     } else {
       Serial.print("MQTT Failed, rc=");
       Serial.println(client.state());
+      return;
     }
   }
   if (client.connected()) {
@@ -93,6 +96,11 @@ void setup() {
   API_KEY = getenv("API_KEY") ? getenv("API_KEY") : "no_key";
   SECRET = getenv("SECRET") ? getenv("SECRET") : "no_secret";
   MQTT_BROKER = getenv("MQTT_BROKER") ? getenv("MQTT_BROKER") : "mqtt-broker";
+
+  char* env_port = getenv("MQTT_PORT");
+  if (env_port != NULL) {
+    MQTT_PORT = atoi(env_port);
+  }
 
   long seed = 0;
   for (int i = 0; DEVICE_NAME[i]; i++) {
@@ -120,6 +128,8 @@ void setup() {
   Serial.println(DEVICE_NAME);
   Serial.print("Broker: ");
   Serial.println(MQTT_BROKER);
+  Serial.print("Port: ");
+  Serial.println(MQTT_PORT);
 }
 
 void loop() {
@@ -133,7 +143,7 @@ void loop() {
   sprintf(macStr, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2],
           mac[3], mac[4], mac[5]);
 
-  doc["mac"] = macStr;
+  doc["macAddress"] = macStr;
   doc["firmware"] = "1.0.0";
   doc["temperature"] = temp;
   doc["humidity"] = hum;
@@ -151,5 +161,5 @@ void loop() {
   client.loop();
 #endif
 
-  delay(2000);
+  delay(1000);
 }

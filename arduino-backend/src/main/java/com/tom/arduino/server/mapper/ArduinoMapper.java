@@ -15,7 +15,7 @@ import com.tom.arduino.server.dto.ArduinoResponse;
 import com.tom.arduino.server.dto.ArduinoResponseToken;
 import com.tom.arduino.server.dto.ArduinoUpdate;
 import com.tom.arduino.server.dto.PageArduinoResponse;
-import com.tom.arduino.server.model.Arduino;
+import com.tom.arduino.server.model.postgres.Arduino;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ArduinoMapper {

@@ -6,6 +6,7 @@ export interface Arduino {
     id: number;
     deviceName: string;
     macAddress: string;
+    description: string;
     firmware: string;
     active: boolean;
     apiKey?: string;
