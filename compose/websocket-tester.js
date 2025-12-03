@@ -1,18 +1,17 @@
 const { Client } = require('@stomp/stompjs');
-const SockJS = require('sockjs-client');
-
-const socket = new SockJS('http://localhost:8000/arduino');
+const WebSocket = require('ws');
 
 const client = new Client({
-  webSocketFactory: () => socket,
+  brokerURL: 'ws://localhost:8000/arduino',
   reconnectDelay: 3000,
-  debug: (msg) => console.log(msg),
+  debug: (msg) => console.log('[STOMP]', msg),
+  webSocketFactory: () => new WebSocket('ws://localhost:8000/arduino'),
 });
 
 client.onConnect = () => {
   console.log('Connected to WebSocket!');
 
-  client.subscribe('/topic/data/sensor-005', (message) => {
+  client.subscribe('/topic/data/sensor-001', (message) => {
     const json = JSON.parse(message.body);
     console.log('Arduino Data:', json);
   });

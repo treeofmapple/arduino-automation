@@ -13,6 +13,7 @@
   "dependencies": {
     "@stomp/stompjs": "^7.2.1",
     "sockjs-client": "^1.6.1",
+    "websocket": "^1.0.35",
     "ws": "^8.18.3"
   }
 }
