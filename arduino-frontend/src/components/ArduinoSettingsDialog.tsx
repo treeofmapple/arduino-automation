@@ -86,8 +86,8 @@ export function ArduinoSettingsDialog({
                 <Button
                   onClick={handleToggleActive}
                   disabled={isToggling}
-                  className={arduino.active 
-                    ? "w-full bg-yellow-600 hover:bg-yellow-700" 
+                  className={arduino.active
+                    ? "w-full bg-yellow-600 hover:bg-yellow-700"
                     : "w-full bg-green-600 hover:bg-green-700"
                   }
                 >

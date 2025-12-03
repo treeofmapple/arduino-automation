@@ -6,10 +6,15 @@ const SOCKET_URL = "http://localhost:8000/v1/arduino";
 let stompClient: Client | null = null;
 
 export const connectArduinoSocket = (
+  deviceName: string,
   onMessage: (data: any) => void,
   onConnected?: () => void,
   onError?: (error: any) => void,
 ) => {
+  if (stompClient && stompClient.active) {
+    stompClient.deactivate();
+  }
+
   const socket = new SockJS(SOCKET_URL);
 
   stompClient = new Client({
@@ -18,7 +23,7 @@ export const connectArduinoSocket = (
     reconnectDelay: 5000,
 
     onConnect: () => {
-      stompClient?.subscribe("/topic/data", (message) => {
+      stompClient?.subscribe(`/topic/${deviceName}`, (message) => {
         try {
           const body = JSON.parse(message.body);
           onMessage(body);
@@ -36,8 +41,10 @@ export const connectArduinoSocket = (
     },
 
     onWebSocketClose: (event) => {
-      console.warn("WebSocket closed:", event);
-      onError?.(event);
+      if (event.code !== 1000) {
+          console.warn("WebSocket closed unexpectedly:", event);
+          onError?.(event);
+      }
     },
 
     onWebSocketError: (event) => {
@@ -55,10 +62,14 @@ export const connectArduinoSocket = (
 };
 
 export const sendToBackend = (path: string, body: any) => {
-  stompClient?.publish({
-    destination: `/send/${path}`,
-    body: JSON.stringify(body),
-  });
+  if (stompClient?.connected) {
+    stompClient.publish({
+        destination: `/app/${path}`,
+        body: JSON.stringify(body),
+    });
+  } else {
+      console.warn("Cannot send message: STOMP client is not connected");
+  }
 };
 
 export const disconnectArduinoSocket = () => {

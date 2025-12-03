@@ -6,7 +6,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 
 import com.tom.arduino.server.dto.ArduinoAuthentication;
-import com.tom.arduino.server.service.ArduinoSocketService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class MqttListener implements MqttCallback {
 
-	private final ArduinoSocketService service;
+	private final ArduinoProcessor processes;
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Override
@@ -49,7 +48,7 @@ public class MqttListener implements MqttCallback {
 				return;
 			}
 
-			service.process(new ArduinoAuthentication(deviceName, apiKey, secret), data);
+			processes.process(new ArduinoAuthentication(deviceName, apiKey, secret), data);
 		} catch (Exception e) {
 			log.error("Error processing MQTT message: {}", e.getMessage());
 		}

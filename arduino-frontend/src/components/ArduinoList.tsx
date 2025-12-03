@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Plus, Cpu, Wifi, WifiOff, ChevronLeft, ChevronRight, MoreVertical, Edit, Key, Trash2, Power } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+  Plus,
+  Cpu,
+  ChevronLeft,
+  ChevronRight,
+  Ban,
+  CheckCircle2,
+} from "lucide-react";
 import { AddArduinoDialog } from "./AddArduinoDialog";
 import { Arduino } from "../App";
 import { toast } from "sonner";
 import { fetchArduinosByPage } from "../api/searchEndpoints";
-
-interface PageArduinoResponse {
-  content: Arduino[];
-  page: number;
-  size: number;
-  totalPages: number;
-  totalElements: number;
-}
 
 interface ArduinoListProps {
   onSelectArduino: (arduino: Arduino) => void;
@@ -57,18 +55,18 @@ export function ArduinoList({ onSelectArduino }: ArduinoListProps) {
   }, [currentPage]);
 
   const handleArduinoCreated = (newArduino: Arduino) => {
-    setArduinos(prev => [newArduino, ...prev]);
-    setTotalElements(prev => prev + 1);
+    setArduinos((prev) => [newArduino, ...prev]);
+    setTotalElements((prev) => prev + 1);
     setIsDialogOpen(false);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -123,64 +121,25 @@ export function ArduinoList({ onSelectArduino }: ArduinoListProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge
-                        variant={arduino.active ? "default" : "secondary"}
-                        className={arduino.active ? "bg-green-500" : "bg-slate-600"}
+                        variant={arduino.active ? "default" : "destructive"}
+                        className={
+                          arduino.active
+                            ? "bg-green-500 hover:bg-green-600"
+                            : "bg-red-500 hover:bg-red-600"
+                        }
                       >
                         {arduino.active ? (
                           <>
-                            <Wifi className="size-3 mr-1" />
-                            Online
+                            <CheckCircle2 className="size-3 mr-1" />
+                            Activated
                           </>
                         ) : (
                           <>
-                            <WifiOff className="size-3 mr-1" />
-                            Offline
+                            <Ban className="size-3 mr-1" />
+                            Blocked
                           </>
                         )}
                       </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-700"
-                          >
-                            <MoreVertical className="size-4" />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700 text-white">
-                          <DropdownMenuItem
-                            onClick={() => handleToggleActive(arduino, {} as React.MouseEvent)}
-                            className="cursor-pointer hover:bg-slate-700 focus:bg-slate-700"
-                          >
-                            <Power className="size-4 mr-2" />
-                            {arduino.active ? "Deactivate" : "Activate"}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleEdit(arduino, {} as React.MouseEvent)}
-                            className="cursor-pointer hover:bg-slate-700 focus:bg-slate-700"
-                          >
-                            <Edit className="size-4 mr-2" />
-                            Edit Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleRegenerateToken(arduino.deviceName, {} as React.MouseEvent)}
-                            className="cursor-pointer hover:bg-slate-700 focus:bg-slate-700"
-                          >
-                            <Key className="size-4 mr-2" />
-                            Regenerate Tokens
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-slate-700" />
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(arduino, {} as React.MouseEvent)}
-                            className="cursor-pointer hover:bg-red-600 focus:bg-red-600 text-red-400"
-                          >
-                            <Trash2 className="size-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                     </div>
                   </div>
                   <CardTitle
@@ -194,12 +153,17 @@ export function ArduinoList({ onSelectArduino }: ArduinoListProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Firmware</span>
-                    <Badge variant="outline" className="border-slate-600 text-slate-300">
-                      {arduino.firmware}
-                    </Badge>
-                  </div>
+                  {arduino.firmware && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-slate-400">Firmware</span>
+                      <Badge
+                        variant="outline"
+                        className="border-slate-600 text-slate-300"
+                      >
+                        {arduino.firmware}
+                      </Badge>
+                    </div>
+                  )}
                   <div className="pt-2 border-t border-slate-700">
                     <p className="text-xs text-slate-500">
                       Last updated: {formatDate(arduino.lastModifiedDate)}
@@ -223,7 +187,7 @@ export function ArduinoList({ onSelectArduino }: ArduinoListProps) {
             <Button
               variant="outline"
               className="border-slate-700 text-slate-300"
-              onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
               disabled={currentPage === 0}
             >
               <ChevronLeft className="size-4 mr-1" />
@@ -235,7 +199,9 @@ export function ArduinoList({ onSelectArduino }: ArduinoListProps) {
             <Button
               variant="outline"
               className="border-slate-700 text-slate-300"
-              onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))
+              }
               disabled={currentPage >= totalPages - 1}
             >
               Next

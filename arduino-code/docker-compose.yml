@@ -1,0 +1,53 @@
+services:
+  sensor-01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DEVICE_NAME=sensor-003
+      - API_KEY=c716db8eadb2771c8a7ec79f68e2a610
+      - SECRET=fd29411ae77ddd5dc70d47505cc007f4994fb8b94a4b0e8b1aa8c907e2584873
+      - MQTT_BROKER=mqtt-broker
+    networks:
+      - default
+
+  sensor-02:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DEVICE_NAME=sensor-004
+      - API_KEY=72ebf198360cfc0219bc1b717d457724
+      - SECRET=4af7b71bb6492cdbceff95c25e714c867c6c16e3cf55b743ba53ae537410f2be
+      - MQTT_BROKER=mqtt-broker
+    networks:
+      - default
+
+  sensor-03:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DEVICE_NAME=sensor-005
+      - API_KEY=a9fb3fc6f0acbfe687d2379a5a78a0b1
+      - SECRET=6a771fa3f857103f11909f125424355c5b216dd10d69c46880228993d61e4c52
+      - MQTT_BROKER=mqtt-broker
+    networks:
+      - default
+
+  sensor-04:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DEVICE_NAME=sensor-006
+      - API_KEY=7e151981e2dd79358d3715a10a6e39c1
+      - SECRET=d1dbc79507bd6b3c8e1b32c6952c7f73715b8ca79e581a8c886e3c615f777b87
+      - MQTT_BROKER=mqtt-broker
+    networks:
+      - default
+
+networks:
+  default:
+    name: compose_default
+    external: true

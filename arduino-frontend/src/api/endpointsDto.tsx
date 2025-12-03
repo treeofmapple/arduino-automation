@@ -46,7 +46,6 @@ export interface ArduinoDataMessage {
 
 export interface ArduinoRequest {
     deviceName: string;
-    macAddress: string;
     description: string;
 }
 

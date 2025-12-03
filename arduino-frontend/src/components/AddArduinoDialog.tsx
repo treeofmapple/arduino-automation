@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -7,6 +14,8 @@ import { Textarea } from "./ui/textarea";
 import { Loader2, CheckCircle, Copy } from "lucide-react";
 import { Arduino } from "../App";
 import { toast } from "sonner@2.0.3";
+import { createArduino } from "../api/mainEndpoints";
+import { ArduinoRequest } from "../api/endpointsDto";
 
 interface ArduinoResponseToken extends Arduino {
   apiKey: string;
@@ -21,69 +30,48 @@ interface AddArduinoDialogProps {
 
 export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddArduinoDialogProps) {
   const [deviceName, setDeviceName] = useState("");
-  const [macAddress, setMacAddress] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [createdArduino, setCreatedArduino] = useState<ArduinoResponseToken | null>(null);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-
     if (!deviceName.trim()) {
       newErrors.deviceName = "Please set a name for the device";
     }
-
-    if (!macAddress.trim()) {
-      newErrors.macAddress = "Please set the mac address for connection";
-    } else if (!/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(macAddress)) {
-      newErrors.macAddress = "Please enter a valid MAC address (e.g., 00:1B:44:11:3A:B7)";
-    }
-
     if (description.length > 2048) {
       newErrors.description = "Description cannot exceed 2048 characters";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
+    setErrors({});
 
     try {
-      // Replace with your actual API endpoint
-      // const response = await fetch('/api/arduinos', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ deviceName, macAddress, description })
-      // });
-      // const data: ArduinoResponseToken = await response.json();
-
-      // Mock API response
-      const mockResponse: ArduinoResponseToken = {
-        id: Date.now(),
-        deviceName,
-        macAddress,
-        firmware: "v2.3.1",
-        active: true,
-        apiKey: `ak_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
-        secret: `sk_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
-        createdDate: new Date().toISOString(),
-        lastModifiedDate: new Date().toISOString()
+      const requestBody: ArduinoRequest = {
+        deviceName: deviceName,
+        description: description
       };
 
-      setCreatedArduino(mockResponse);
+      const data = await createArduino(requestBody);
+
+      setCreatedArduino(data);
       toast.success("Arduino device created successfully!");
+
     } catch (error) {
       console.error("Error creating Arduino:", error);
-      toast.error("Failed to create Arduino device");
+      toast.error("Failed to create Arduino device. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,10 +79,10 @@ export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddAr
 
   const handleClose = () => {
     if (createdArduino) {
-      onArduinoCreated(createdArduino);
+      onArduinoCreated(createdArduino as unknown as Arduino);
     }
+
     setDeviceName("");
-    setMacAddress("");
     setDescription("");
     setErrors({});
     setCreatedArduino(null);
@@ -130,20 +118,6 @@ export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddAr
                 />
                 {errors.deviceName && (
                   <p className="text-red-400 text-sm">{errors.deviceName}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="macAddress">MAC Address *</Label>
-                <Input
-                  id="macAddress"
-                  value={macAddress}
-                  onChange={(e) => setMacAddress(e.target.value)}
-                  placeholder="00:1B:44:11:3A:B7"
-                  className="bg-slate-900 border-slate-700 text-white font-mono"
-                />
-                {errors.macAddress && (
-                  <p className="text-red-400 text-sm">{errors.macAddress}</p>
                 )}
               </div>
 
@@ -202,7 +176,8 @@ export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddAr
                 <DialogTitle>Device Created Successfully!</DialogTitle>
               </div>
               <DialogDescription className="text-slate-400">
-                Save these credentials securely. You won't be able to see the secret again.
+                Save these credentials securely. You won't be able to see the
+                secret again.
               </DialogDescription>
             </DialogHeader>
 
@@ -218,7 +193,9 @@ export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddAr
                 </div>
                 <div>
                   <Label className="text-slate-400 text-xs">MAC Address</Label>
-                  <p className="text-white font-mono">{createdArduino.macAddress}</p>
+                  <p className="text-white font-mono">
+                    {createdArduino.macAddress}
+                  </p>
                 </div>
               </div>
 
@@ -230,13 +207,17 @@ export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddAr
                       size="sm"
                       variant="ghost"
                       className="h-6 text-amber-400 hover:text-amber-300"
-                      onClick={() => copyToClipboard(createdArduino.apiKey!, "API Key")}
+                      onClick={() =>
+                        copyToClipboard(createdArduino.apiKey!, "API Key")
+                      }
                     >
                       <Copy className="size-3 mr-1" />
                       Copy
                     </Button>
                   </div>
-                  <p className="text-white font-mono text-sm break-all">{createdArduino.apiKey}</p>
+                  <p className="text-white font-mono text-sm break-all">
+                    {createdArduino.apiKey}
+                  </p>
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -245,13 +226,17 @@ export function AddArduinoDialog({ open, onOpenChange, onArduinoCreated }: AddAr
                       size="sm"
                       variant="ghost"
                       className="h-6 text-amber-400 hover:text-amber-300"
-                      onClick={() => copyToClipboard(createdArduino.secret!, "Secret")}
+                      onClick={() =>
+                        copyToClipboard(createdArduino.secret!, "Secret")
+                      }
                     >
                       <Copy className="size-3 mr-1" />
                       Copy
                     </Button>
                   </div>
-                  <p className="text-white font-mono text-sm break-all">{createdArduino.secret}</p>
+                  <p className="text-white font-mono text-sm break-all">
+                    {createdArduino.secret}
+                  </p>
                 </div>
               </div>
             </div>

@@ -1,10 +1,13 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-const char *DEVICE_NAME;
-const char *API_KEY;
-const char *SECRET;
-const char *MQTT_BROKER;
+const char* DEVICE_NAME = "NONE";
+const char* API_KEY = "NONE";
+const char* SECRET = "NONE";
+const char* MQTT_BROKER = "NONE";
+
+const char* WIFI_SSID = "NONE";
+const char* WIFI_PASSWORD = "NONE";
 
 byte mac[6];
 
@@ -14,21 +17,17 @@ String getTopic() {
 
 #ifdef EPOXY_DUINO
 #include <cstdlib>
-#include <ctime>
 
 void sendMqtt(String topic, String payload) {
   payload.replace("\"", "\\\"");
-  String command = "mosquitto_pub -h " + String(MQTT_BROKER) + " -t " + topic +
-                   " -m \"" + payload + "\"";
-
+  String command = "mosquitto_pub -h " + String(MQTT_BROKER) + " -t " + topic + " -m \"" + payload + "\"";
   Serial.print("[SIMULATION] Executing: ");
   Serial.println(command);
 
   int result = system(command.c_str());
 
   if (result != 0) {
-    Serial.println("[ERROR] Failed to publish. Is 'mosquitto-clients' "
-                   "installed inside the container?");
+    Serial.println("[ERROR] Failed to publish. Is 'mosquitto-clients' installed?");
   }
 }
 
@@ -39,9 +38,6 @@ void sendMqtt(String topic, String payload) {
 #include <ESP8266WiFi.h>
 #endif
 #include <PubSubClient.h>
-
-const char *WIFI_SSID = "YOUR_WIFI_NAME";
-const char *WIFI_PASSWORD = "YOUR_WIFI_PASS";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
@@ -62,8 +58,7 @@ void setupHardware() {
   Serial.print("MAC Address: ");
   for (int i = 0; i < 6; i++) {
     Serial.printf("%02X", mac[i]);
-    if (i < 5)
-      Serial.print(":");
+    if (i < 5) Serial.print(":");
   }
   Serial.println();
   client.setServer(MQTT_BROKER, 1883);
@@ -86,41 +81,21 @@ void sendMqtt(String topic, String payload) {
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("System Initialized");
 
-#ifdef EPOXY_DUINO
-  DEVICE_NAME =
-      getenv("DEVICE_NAME") ? getenv("DEVICE_NAME") : "unknown_device";
-  API_KEY = getenv("API_KEY") ? getenv("API_KEY") : "no_key";
-  SECRET = getenv("SECRET") ? getenv("SECRET") : "no_secret";
-  MQTT_BROKER = getenv("MQTT_BROKER") ? getenv("MQTT_BROKER") : "mqtt-broker";
-
-  long seed = 0;
-  for (int i = 0; DEVICE_NAME[i]; i++) {
-    seed += DEVICE_NAME[i];
-  }
-  srand(time(NULL) + seed);
+#ifndef EPOXY_DUINO
+  setupHardware();
+#else
 
   mac[0] = 0xDE;
   mac[1] = 0xAD;
   mac[2] = 0xBE;
-  mac[3] = rand() % 256;
-  mac[4] = rand() % 256;
-  mac[5] = rand() % 256;
-
-#else
-  DEVICE_NAME = "sensor-physical";
-  API_KEY = "physical-key";
-  SECRET = "physical-secret";
-  MQTT_BROKER = "mqtt-broker";
-  setupHardware();
+  mac[3] = 0xEF;
+  mac[4] = 0xFE;
+  mac[5] = 0xED;
 #endif
-
-  Serial.println("System Initialized");
-  Serial.print("Device Name: ");
-  Serial.println(DEVICE_NAME);
-  Serial.print("Broker: ");
-  Serial.println(MQTT_BROKER);
 }
+
 
 void loop() {
   double temp = 25.0 + (rand() % 100) / 10.0;
@@ -130,7 +105,8 @@ void loop() {
   JsonDocument doc;
 
   char macStr[18];
-  sprintf(macStr, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2],
+  sprintf(macStr, "%02X:%02X:%02X:%02X:%02X:%02X",
+          mac[0], mac[1], mac[2],
           mac[3], mac[4], mac[5]);
 
   doc["mac"] = macStr;

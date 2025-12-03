@@ -63,10 +63,6 @@ public class ArduinoService {
 			throw new AlreadyExistsException("Device with that name already exists.");
 		});
 
-		repository.findByMacAddress(request.macAddress()).ifPresent(existing -> {
-			throw new AlreadyExistsException("Device with that address already exists.");
-		});
-		
 		var arduino = mapper.build(request);
 		var tokens = tokensGenerator.generateKeyPair();
 		arduino.setApiKey(passwordEncoder.encode(tokens.apiKey()));

@@ -12,6 +12,4 @@ public interface ArduinoRepository extends JpaRepository<Arduino, Long> {
 
 	Optional<Arduino> findByDeviceName(String deviceName);
 
-	Optional<Arduino> findByMacAddress(String macAddress);
-	
 }
