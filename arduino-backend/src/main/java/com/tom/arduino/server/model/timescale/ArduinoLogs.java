@@ -34,7 +34,7 @@ public class ArduinoLogs {
 	private Instant time;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "arduino_id")
+	@JoinColumn(name = "arduino_id", nullable = true)
     private Arduino arduino;
 	
 	private String deviceName;
