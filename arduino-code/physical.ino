@@ -8,9 +8,9 @@ const char *MQTT_BROKER = "NONE";
 
 const char *WIFI_SSID = "NONE";
 const char *WIFI_PASSWORD = "NONE";
+int MQTT_PORT = 9002;
 
 byte mac[6];
-int MQTT_PORT = 9002;
 
 String getTopic() {
   return String("arduino/") + DEVICE_NAME + "/" + API_KEY + "/" + SECRET;

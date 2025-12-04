@@ -8,32 +8,27 @@ services:
     depends_on:
       timescale:
         condition: service_healthy
-      #postgres:
-      #  condition: service_healthy
       emqx:
         condition: service_started
     ports:
       - "${ARDUINO_DASHBOARD_PORT}:${ARDUINO_DASHBOARD_PORT}"
     env_file:
       - .env
-
-#  postgres:
-#    image: postgres:16
-#    container_name: postgres-arduino
-#    restart: always
-#    environment:
-#      POSTGRES_USER: ${DB_USER}
-#      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#      POSTGRES_DB: ${DB_DATABASE}
-#    ports:
-#      - "${DB_PORT}:5432"
-#    volumes:
-#      - postgres-arduino:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U postgres"]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
+  arduino-frontend:
+      build:
+        context: ../arduino-frontend
+        dockerfile: Dockerfile
+      container_name: arduino-frontend
+      restart: unless-stopped
+      depends_on:
+        - arduino-dashboard
+      ports:
+        - "5173:5173"
+      volumes:
+        - ../arduino-frontend:/app
+        - /app/node_modules
+      env_file:
+        - .env
 
   timescale:
     image: timescale/timescaledb:latest-pg16
